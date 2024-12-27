@@ -13,31 +13,31 @@ class Day03 {
     }
 
     fun partTwo(input: List<String>): Int {
-        return input.sumOf { line -> calculateSumOfMultiplicationsWithDosAndDonts(line) }
+        return calculateSumOfMultiplicationsWithDosAndDonts(input.joinToString())
     }
 
     private fun calculateSumOfMultiplicationsWithDosAndDonts(line: String): Int {
-        val allMultiplications = Regex(MULTIPLY_PATTERN).findAll(line).toList()
         val allDos = Regex(DO_PATTERN).findAll(line).toList()
         val allDonts = Regex(DONT_PATTERN).findAll(line).toList()
 
-        var lastStartOfMultiplication = 0
+        return Regex(MULTIPLY_PATTERN).findAll(line).filter { multiplication ->
+            shouldMultiplicationBeConsidered(multiplication, allDos, allDonts)
+        }.map { it.value }.sumOf { multiplyNumbers(it) }
+    }
 
-        for (multiplication in allMultiplications) {
-            val value = multiplication.value
-            val range = multiplication.range
+    private fun shouldMultiplicationBeConsidered(
+        multiplication: MatchResult,
+        allDos: List<MatchResult>,
+        allDonts: List<MatchResult>
+    ): Boolean {
+        val range = multiplication.range
 
-            val start = range.first
+        val start = range.first
 
-            val allDosBefore = allDos.filter { doStmt -> doStmt.range.first in (lastStartOfMultiplication + 1)..<start }
-            val allDontsBefore = allDonts.filter { dontStmt -> dontStmt.range.first in (lastStartOfMultiplication + 1)..<start }
+        val latestDoBefore = allDos.lastOrNull { doStmt -> doStmt.range.first in 0..<start }?.range?.first ?: -1
+        val latestDontBefore = allDonts.lastOrNull { dontStmt -> dontStmt.range.first in 0..<start }?.range?.first ?: -1
 
-
-
-            lastStartOfMultiplication = start
-        }
-
-        return 0
+        return (latestDoBefore == -1 && latestDontBefore == -1) || latestDoBefore > latestDontBefore
     }
 
     private fun calculateSumOfMultiplications(line: String): Int {
@@ -59,6 +59,8 @@ fun main() {
     val day03 = Day03()
     val input = readInput("day03/input")
     val partOneResult = day03.partOne(input)
+    val partTwoResult = day03.partTwo(input)
 
     println("Day 03 part one result is $partOneResult")
+    println("Day 03 part two result is $partTwoResult")
 }
