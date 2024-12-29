@@ -100,4 +100,29 @@ class Day04Test {
 
         assertEquals(18, result)
     }
+
+    @Test
+    fun testPartTwo() {
+        val day04 = Day04()
+        val input = listOf(
+            "M.S",
+            ".A.",
+            "M.S"
+        )
+
+        val result = day04.partTwo(input)
+
+        assertEquals(1, result)
+    }
+
+    @Test
+    fun testPartTwoComplete() {
+        val day04 = Day04()
+
+        val input = readInput("day04/input_test")
+
+        val result = day04.partTwo(input)
+
+        assertEquals(9, result)
+    }
 }
